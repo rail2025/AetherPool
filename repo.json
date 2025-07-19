@@ -20,9 +20,9 @@
         "DalamudApiLevel": 12,
         "TestingDalamudApiLevel": 12,
         "LoadPriority": 0,
-        "DownloadLinkInstall": "https://github.com/rail2025/AetherPool/releases/download/v0.1.0/latest.zip",
-        "DownloadLinkUpdate": "https://github.com/rail2025/AetherPool/releases/download/v0.1.0/latest.zip",
-        "DownloadLinkTesting": "https://github.com/rail2025/AetherPool/releases/download/v0.1.0/latest.zip",
+        "DownloadLinkInstall": "https://github.com/rail2025/AetherPool/releases/download/v0.1.0.0/latest.zip",
+        "DownloadLinkUpdate": "https://github.com/rail2025/AetherPool/releases/download/v0.1.0.0/latest.zip",
+        "DownloadLinkTesting": "https://github.com/rail2025/AetherPool/releases/download/v0.1.0.0/latest.zip",
         "SupportsProfiles": true,
         "IconUrl": "https://raw.githubusercontent.com/rail2025/AetherPool/main/icon.png"
     }
