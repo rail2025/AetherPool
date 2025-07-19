@@ -1,0 +1,22 @@
+{
+    "Author": "rail",
+    "Name": "AetherPool",
+    "Punchline": "A 2D pool game inside Final Fantasy XIV.",
+    "Description": "Play a game of pool directly in a Dalamud window. Use /pool to open.",
+    "InternalName": "AetherPool",
+    "AssemblyVersion": "0.1.0.0",
+    "Tags": [
+        "game",
+        "pool",
+        "UI"
+    ],
+    "RepoUrl": "https://github.com/rail2025/AetherPool",
+    "ApplicableVersion": "any",
+    "DalamudApiLevel": 12,
+    "LoadPriority": 0,
+    "LastUpdate": 0,
+    "DownloadLinkInstall": "",
+    "DownloadLinkUpdate": "",
+    "DownloadLinkTesting": "",
+    "IconUrl": "https://raw.githubusercontent.com/YourName/AetherPool/main/icon.png"
+}

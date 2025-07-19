@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Dalamud.NET.Sdk/12.0.2">
+  <PropertyGroup>
+    <AssemblyName>AetherPool</AssemblyName>
+    <RootNamespace>AetherPool</RootNamespace>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <Description>Pool in FFXIV</Description>
+    <PackageProjectUrl>https://github.com/rail2025/AetherPool</PackageProjectUrl>
+    <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
+    <IsPackable>false</IsPackable>
+    <TargetFramework>net9.0</TargetFramework>
+    <Platforms>x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+    <Authors>rail</Authors>
+    <DalamudApiLevel>12</DalamudApiLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="AetherPool.json" />
+    <Content Include="Assets\Images\background 2.png" />
+    <Content Include="Assets\Images\background 3.png" />
+    <Content Include="Assets\Images\background.png" />
+    <Content Include="Assets\Images\bird.png" />
+    <Content Include="Assets\Images\bomb.png" />
+    <Content Include="Assets\Images\chest.png" />
+    <Content Include="Assets\Images\dps.png" />
+    <Content Include="Assets\Images\healer.png" />
+    <Content Include="Assets\Images\icon.png" />
+    <Content Include="Assets\Images\mirror.png" />
+    <Content Include="Assets\Images\paint.png" />
+    <Content Include="Assets\Images\star.png" />
+    <Content Include="Assets\Images\tank.png" />
+    <EmbeddedResource Include="Assets\Sfx\pocket.wav" />
+    <EmbeddedResource Include="Assets\Sfx\cue_hit.wav" />
+    <EmbeddedResource Include="Assets\Sfx\ball_hit.wav" />
+    <Content Include="repo.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.8" />
+    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.6" />
+    <PackageReference Include="SixLabors.ImageSharp.Web" Version="3.1.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Assets\Music\" />
+  </ItemGroup>
+</Project>
