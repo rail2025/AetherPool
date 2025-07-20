@@ -2,6 +2,7 @@ using AetherPool.Game.GameObjects;
 using System.Collections.Generic;
 using System.Numerics;
 using System;
+using System.Linq;
 
 namespace AetherPool.Game
 {
@@ -59,11 +60,7 @@ namespace AetherPool.Game
                         if (ball2.Number == 0) session.FirstBallHitThisTurn = ball1;
                     }
 
-                    if (ball1.Velocity.LengthSquared() > 0.1f || ball2.Velocity.LengthSquared() > 0.1f)
-                    {
-                        float impactSpeed = (ball1.Velocity - ball2.Velocity).Length();
-                        events.Add(new CollisionEvent { Type = CollisionType.Ball, ImpactVelocity = impactSpeed });
-                    }
+                    events.Add(new CollisionEvent { Type = CollisionType.Ball, ImpactVelocity = (ball1.Velocity - ball2.Velocity).Length() });
 
                     float distance = MathF.Sqrt(distSq);
                     Vector2 normal = delta / distance;
@@ -83,7 +80,6 @@ namespace AetherPool.Game
 
                     float followDrawEffect = ball1.Spin.X * 0.15f;
                     float v1n_after_impact = v2n + followDrawEffect;
-
                     ball1.Spin *= 0.5f;
 
                     ball1.Velocity = (normal * v1n_after_impact) + (tangent * v1t);
@@ -99,11 +95,19 @@ namespace AetherPool.Game
             float feltWidth = board.Width - (board.BorderWidth * 2);
             float feltHeight = board.Height - (board.BorderWidth * 2);
 
-            if (ball.Position.X - ball.Radius < feltX && ball.Velocity.X < 0) { ball.Position.X = feltX + ball.Radius; events.Add(new CollisionEvent { Type = CollisionType.Cushion, ImpactVelocity = Math.Abs(ball.Velocity.X) }); ball.Velocity.X *= -1; }
-            else if (ball.Position.X + ball.Radius > feltX + feltWidth && ball.Velocity.X > 0) { ball.Position.X = feltX + feltWidth - ball.Radius; events.Add(new CollisionEvent { Type = CollisionType.Cushion, ImpactVelocity = Math.Abs(ball.Velocity.X) }); ball.Velocity.X *= -1; }
+            if ((ball.Position.X - ball.Radius < feltX && ball.Velocity.X < 0) ||
+                (ball.Position.X + ball.Radius > feltX + feltWidth && ball.Velocity.X > 0))
+            {
+                ball.Velocity.X *= -1;
+                events.Add(new CollisionEvent { Type = CollisionType.Cushion });
+            }
 
-            if (ball.Position.Y - ball.Radius < feltY && ball.Velocity.Y < 0) { ball.Position.Y = feltY + ball.Radius; events.Add(new CollisionEvent { Type = CollisionType.Cushion, ImpactVelocity = Math.Abs(ball.Velocity.Y) }); ball.Velocity.Y *= -1; }
-            else if (ball.Position.Y + ball.Radius > feltY + feltHeight && ball.Velocity.Y > 0) { ball.Position.Y = feltY + feltHeight - ball.Radius; events.Add(new CollisionEvent { Type = CollisionType.Cushion, ImpactVelocity = Math.Abs(ball.Velocity.Y) }); ball.Velocity.Y *= -1; }
+            if ((ball.Position.Y - ball.Radius < feltY && ball.Velocity.Y < 0) ||
+                (ball.Position.Y + ball.Radius > feltY + feltHeight && ball.Velocity.Y > 0))
+            {
+                ball.Velocity.Y *= -1;
+                events.Add(new CollisionEvent { Type = CollisionType.Cushion });
+            }
         }
 
         private static void HandlePocketing(PoolBall ball, GameBoard board, List<CollisionEvent> events)

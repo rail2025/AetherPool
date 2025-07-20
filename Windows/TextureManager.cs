@@ -1,3 +1,5 @@
+#pragma warning disable CA1416 // Suppress platform compatibility warnings
+
 using Dalamud.Interface.Textures;
 using Dalamud.Interface.Textures.TextureWraps;
 using SixLabors.Fonts;

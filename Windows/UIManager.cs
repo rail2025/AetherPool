@@ -1,37 +1,25 @@
+#pragma warning disable CA1416
+
 using System;
 using System.Collections.Generic;
 using System.Numerics;
 using AetherPool.Game.GameObjects;
+using Dalamud.Interface;
 using ImGuiNET;
 
 namespace AetherPool.Windows
 {
     public static class UIManager
     {
-        public static void DrawMainMenu(Action onStartGame)
-        {
-            var windowSize = ImGui.GetWindowSize();
-            var buttonSize = new Vector2(120, 40);
-            ImGui.SetCursorPos(new Vector2((windowSize.X - buttonSize.X) * 0.5f, (windowSize.Y - buttonSize.Y) * 0.5f));
-
-            if (ImGui.Button("Start Game", buttonSize))
-            {
-                onStartGame();
-            }
-        }
-
         public static void DrawTable(ImDrawListPtr drawList, Vector2 origin, Vector2 size, GameBoard board)
         {
             var woodColor = ImGui.GetColorU32(new Vector4(0.35f, 0.2f, 0.1f, 1.0f));
             var feltColor = ImGui.GetColorU32(new Vector4(0.0f, 0.4f, 0.1f, 1.0f));
-
             drawList.AddRectFilled(origin, origin + size, woodColor);
-
             var scaledBorder = board.BorderWidth * (size.X / board.Width);
             var feltOrigin = origin + new Vector2(scaledBorder, scaledBorder);
             var feltSize = size - new Vector2(scaledBorder * 2, scaledBorder * 2);
             drawList.AddRectFilled(feltOrigin, feltOrigin + feltSize, feltColor);
-
             var scaledPocketRadius = board.PocketRadius * (size.X / board.Width);
             foreach (var pocket in board.Pockets)
             {
@@ -44,10 +32,8 @@ namespace AetherPool.Windows
         {
             var screenPos = tableOrigin + ball.Position * scale;
             var screenRadius = ball.Radius * scale;
-
             var shadowOffset = new Vector2(2 * scale, 2 * scale);
             drawList.AddCircleFilled(screenPos + shadowOffset, screenRadius, ImGui.GetColorU32(new Vector4(0, 0, 0, 0.3f)), 32);
-
             var texture = textureManager.GetBallTexture(ball.Number);
             if (texture != null)
             {
@@ -70,23 +56,10 @@ namespace AetherPool.Windows
         {
             var cueLength = 200f * scale;
             var cueOffset = 10f * scale;
-
-            float pullback;
-            if (isAnimating)
-            {
-                // Animate from pulled-back position to impact position
-                pullback = (1.0f - animProgress) * power * 50f * scale;
-            }
-            else
-            {
-                // Static pullback based on drag distance
-                pullback = power * 50f * scale;
-            }
-
+            float pullback = isAnimating ? (1.0f - animProgress) * power * 50f * scale : power * 50f * scale;
             var direction = new Vector2(MathF.Cos(cue.Angle), MathF.Sin(cue.Angle));
             var cueStartPos = cue.Position * scale - direction * (pullback + cueOffset);
             var endPoint = cueStartPos - direction * cueLength;
-
             drawList.AddLine(tableOrigin + cueStartPos, tableOrigin + endPoint, ImGui.GetColorU32(new Vector4(0.7f, 0.5f, 0.3f, 1.0f)), 4f * scale);
         }
 
@@ -94,10 +67,31 @@ namespace AetherPool.Windows
         {
             for (int i = 0; i < path.Count - 1; i++)
             {
-                var startPos = tableOrigin + path[i] * scale;
-                var endPos = tableOrigin + path[i + 1] * scale;
-                drawList.AddLine(startPos, endPos, ImGui.GetColorU32(new Vector4(1, 1, 1, 0.5f)), 1f);
+                drawList.AddLine(tableOrigin + path[i] * scale, tableOrigin + path[i + 1] * scale, ImGui.GetColorU32(new Vector4(1, 1, 1, 0.5f)), 1f);
             }
+        }
+
+        public static void DrawFoulMessage(Vector2 windowContentMin, Vector2 canvasSize, string? foulReason)
+        {
+            if (string.IsNullOrEmpty(foulReason)) return;
+
+            var text = $"Foul: {foulReason}\nOpponent has ball-in-hand.";
+            var padding = new Vector2(10, 10);
+
+            ImGui.PushFont(UiBuilder.DefaultFont);
+            var textSize = ImGui.CalcTextSize(text, canvasSize.X * 0.6f);
+            ImGui.PopFont();
+
+            var boxSize = textSize + padding * 2;
+            var boxPos = windowContentMin + new Vector2((canvasSize.X - boxSize.X) / 2, 10); // Position at top-center of window
+
+            var drawList = ImGui.GetForegroundDrawList();
+
+            drawList.AddRectFilled(boxPos, boxPos + boxSize, ImGui.GetColorU32(new Vector4(0.1f, 0.1f, 0.1f, 0.85f)), 5.0f);
+            drawList.AddRect(boxPos, boxPos + boxSize, ImGui.GetColorU32(new Vector4(1, 0, 0, 1)), 5.0f, ImDrawFlags.None, 2.0f);
+
+            var textPos = boxPos + padding;
+            drawList.AddText(textPos, ImGui.GetColorU32(new Vector4(1, 1, 1, 1)), text);
         }
 
         public static void DrawHUD(
@@ -105,26 +99,22 @@ namespace AetherPool.Windows
             Vector2 tableOrigin, Vector2 tableSize, ref Vector2 aimOffset,
             Action onPlaceCueBall, Action onUndo, Action onResetGame)
         {
-            // --- Game Controls on the left side ---
             var buttonSize = new Vector2(100, 25);
             var startX = windowOrigin.X + 10;
             var startY = tableOrigin.Y;
 
             ImGui.SetCursorScreenPos(new Vector2(startX, startY));
             if (ImGui.Button("Reset Game", buttonSize)) onResetGame();
-
             ImGui.SetCursorScreenPos(new Vector2(startX, startY + 30));
             if (ImGui.Button("Undo Shot", buttonSize)) onUndo();
-
             ImGui.SetCursorScreenPos(new Vector2(startX, startY + 60));
             if (ImGui.Button("Place Cue Ball", buttonSize)) onPlaceCueBall();
 
-            // --- Aiming Control Window on the right side ---
             var controlSize = 80f;
             var controlPos = new Vector2(tableOrigin.X + tableSize.X + 20, tableOrigin.Y);
 
             ImGui.SetCursorScreenPos(controlPos);
-            ImGui.BeginChild("##AimControlChild", new Vector2(controlSize, controlSize), false, ImGuiWindowFlags.NoScrollbar);
+            ImGui.BeginChild("##AimControlChild", new Vector2(controlSize, controlSize), true, ImGuiWindowFlags.NoScrollbar);
 
             var childDrawList = ImGui.GetWindowDrawList();
             var childOrigin = ImGui.GetWindowPos();
@@ -132,19 +122,14 @@ namespace AetherPool.Windows
             var controlRadius = controlSize / 2 - 5;
 
             childDrawList.AddCircleFilled(controlCenter, controlRadius, ImGui.GetColorU32(new Vector4(1, 1, 1, 1)));
-
             if (ImGui.IsWindowHovered() && ImGui.IsMouseDown(ImGuiMouseButton.Left))
             {
                 var mouseInControl = ImGui.GetMousePos() - controlCenter;
-                if (mouseInControl.Length() < controlRadius)
-                {
-                    aimOffset = mouseInControl / controlRadius;
-                }
+                if (mouseInControl.Length() < controlRadius) aimOffset = mouseInControl / controlRadius;
             }
-
             childDrawList.AddCircleFilled(controlCenter + aimOffset * controlRadius, 3, ImGui.GetColorU32(new Vector4(1, 0, 0, 1)));
-
             ImGui.EndChild();
         }
     }
 }
+#pragma warning restore CA1416

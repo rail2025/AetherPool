@@ -1,3 +1,5 @@
+#pragma warning disable CA1416 // Suppress platform compatibility warnings
+
 using System;
 using System.Numerics;
 using Dalamud.Interface.Windowing;

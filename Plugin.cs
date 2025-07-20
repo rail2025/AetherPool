@@ -1,3 +1,5 @@
+#pragma warning disable CA1416 // Suppress platform compatibility warnings
+
 using Dalamud.Game.Command;
 using Dalamud.IoC;
 using Dalamud.Plugin;

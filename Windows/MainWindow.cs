@@ -1,3 +1,5 @@
+#pragma warning disable CA1416
+
 using System;
 using System.Numerics;
 using AetherPool.Game;
@@ -28,7 +30,6 @@ namespace AetherPool.Windows
             this.plugin = plugin;
             this.gameSession = gameSession;
             this.textureManager = new TextureManager();
-
             this.SizeConstraints = new WindowSizeConstraints
             {
                 MinimumSize = new Vector2(800, 500),
@@ -44,7 +45,6 @@ namespace AetherPool.Windows
 
         public override void OnClose()
         {
-            // When the game window is closed, return to the title screen.
             plugin.TitleWindow.IsOpen = true;
         }
 
@@ -64,27 +64,31 @@ namespace AetherPool.Windows
                 }
             }
 
-            // This window is only for the game itself.
-            // MainMenu and other states are handled by other windows.
             DrawInGameUI();
         }
 
         private void ProcessCollisionSounds()
         {
-            foreach (var e in gameSession.CollisionEvents)
+            for (int i = 0; i < gameSession.CollisionEvents.Count; i++)
             {
-                float volume = Math.Clamp(e.ImpactVelocity / 200f, 0.1f, 1.0f);
-                switch (e.Type)
+                var e = gameSession.CollisionEvents[i];
+                if (!e.ProcessedForSound)
                 {
-                    case CollisionType.Ball:
-                        plugin.AudioManager.PlaySfx("ball_hit.wav", volume);
-                        break;
-                    case CollisionType.Cushion:
-                        plugin.AudioManager.PlaySfx("cushion_hit.wav", volume * 0.5f);
-                        break;
-                    case CollisionType.Pocket:
-                        plugin.AudioManager.PlaySfx("pocket.wav", 1.0f);
-                        break;
+                    float volume = Math.Clamp(e.ImpactVelocity / 200f, 0.1f, 1.0f);
+                    switch (e.Type)
+                    {
+                        case CollisionType.Ball:
+                            plugin.AudioManager.PlaySfx("ball_hit.wav", volume);
+                            break;
+                        case CollisionType.Cushion:
+                            plugin.AudioManager.PlaySfx("cushion_hit.wav", volume * 0.5f);
+                            break;
+                        case CollisionType.Pocket:
+                            plugin.AudioManager.PlaySfx("pocket.wav", 1.0f);
+                            break;
+                    }
+                    e.ProcessedForSound = true;
+                    gameSession.CollisionEvents[i] = e;
                 }
             }
         }
@@ -112,7 +116,6 @@ namespace AetherPool.Windows
             float scale = tableRenderWidth / gameSession.Board.Width;
 
             gameSession.Board.UpdateLayout(gameSession.Board.Width, gameSession.Board.Height);
-
             UIManager.DrawTable(drawList, tableOrigin, tableSize, gameSession.Board);
 
             foreach (var ball in gameSession.Balls)
@@ -125,6 +128,9 @@ namespace AetherPool.Windows
 
             ImGui.SetCursorScreenPos(tableOrigin);
             ImGui.InvisibleButton("##PoolTableCanvas", tableSize);
+
+            // Pass the window's content region info to the foul message drawer
+            UIManager.DrawFoulMessage(windowContentMin, canvasSize, gameSession.FoulReason);
 
             var mousePos = ImGui.GetMousePos();
             var mousePosRelative = (mousePos - tableOrigin) / scale;
@@ -162,8 +168,7 @@ namespace AetherPool.Windows
                         gameSession.Cue.Angle = lockedAimAngle;
                         var dragVector = dragStartPos - mousePos;
                         shotPower = Math.Clamp(dragVector.Length() / 150f, 0, 1);
-                        var angleDiff = Vector2.Dot(Vector2.Normalize(dragVector), new Vector2(MathF.Cos(lockedAimAngle), MathF.Sin(lockedAimAngle)));
-                        if (angleDiff < 0) shotPower = 0;
+                        if (Vector2.Dot(Vector2.Normalize(dragVector), new Vector2(MathF.Cos(lockedAimAngle), MathF.Sin(lockedAimAngle))) < 0) shotPower = 0;
 
                         var path = PhysicsEngine.PredictBallPath(gameSession.Board, cueBall.Position, lockedAimAngle, cueBall.Radius);
                         UIManager.DrawAimingLine(drawList, tableOrigin, path, scale);
@@ -200,3 +205,4 @@ namespace AetherPool.Windows
         }
     }
 }
+#pragma warning restore CA1416
