@@ -3,7 +3,7 @@
   <PropertyGroup>
     <AssemblyName>AetherPool</AssemblyName>
     <RootNamespace>AetherPool</RootNamespace>
-    <AssemblyVersion>0.2.0.0</AssemblyVersion>
+    <AssemblyVersion>0.3.0.0</AssemblyVersion>
     <Description>Pool in FFXIV</Description>
     <PackageProjectUrl>https://github.com/rail2025/AetherPool</PackageProjectUrl>
     <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>

@@ -47,6 +47,24 @@ namespace AetherPool.Windows
         {
             plugin.TitleWindow.IsOpen = true;
         }
+        /// <summary>
+        /// Indicates if the game is currently running in multiplayer mode.
+        /// </summary>
+        public bool IsMultiplayer { get; private set; } = false;
+
+        /// <summary>
+        /// Called when a multiplayer game begins.
+        /// Sets internal flags and updates session state if needed.
+        /// </summary>
+        public void StartMultiplayerGame()
+        {
+            IsMultiplayer = true;
+
+            // reset or configure gameSession here for multiplayer.
+            // For example:
+            // gameSession.Reset();
+            // gameSession.SetMultiplayerMode(true);
+        }
 
         public override void Draw()
         {

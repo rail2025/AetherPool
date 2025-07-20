@@ -4,7 +4,7 @@
     "Punchline": "A 2D pool game inside Final Fantasy XIV.",
     "Description": "Play a game of pool directly in a Dalamud window. Use /pool to open.",
     "InternalName": "AetherPool",
-    "AssemblyVersion": "0.2.0.0",
+    "AssemblyVersion": "0.3.0.0",
     "Tags": [
         "game",
         "pool",

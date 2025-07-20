@@ -53,15 +53,21 @@ namespace AetherPool.Windows
                 this.IsOpen = false;
                 plugin.MainWindow.IsOpen = true;
             }
-
+            // Multiplayer Button
+            ImGui.SetCursorPos(new Vector2(centerPosX, 150f));
+            if (ImGui.Button("Multiplayer", buttonSize))
+            {
+                plugin.MultiplayerWindow.IsOpen = true;
+                this.IsOpen = false;
+            }
             // Other Buttons
-            ImGui.SetCursorPos(new Vector2(centerPosX, 160f));
+            ImGui.SetCursorPos(new Vector2(centerPosX, 190f));
             if (ImGui.Button("Settings", buttonSize))
             {
                 plugin.ConfigWindow.IsOpen = true;
             }
 
-            ImGui.SetCursorPos(new Vector2(centerPosX, 195f));
+            ImGui.SetCursorPos(new Vector2(centerPosX, 225f));
             if (ImGui.Button("About", buttonSize))
             {
                 plugin.AboutWindow.IsOpen = true;

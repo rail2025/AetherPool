@@ -11,7 +11,7 @@ namespace AetherPool.Game
         private const float Friction = 0.984f;
         private const float SpinFriction = 0.96f;
 
-        public static void Update(List<PoolBall> balls, GameBoard board, float deltaTime, List<CollisionEvent> events, GameSession session)
+        public static void Update(List<PoolBall> balls, GameBoard board, float deltaTime, List<CollisionEvent> events, GameSession? session)
         {
             for (int i = 0; i < balls.Count; i++)
             {
@@ -41,7 +41,7 @@ namespace AetherPool.Game
             return Vector2.Distance(p, proj);
         }
 
-        private static void HandleBallCollisions(PoolBall ball1, List<PoolBall> allBalls, int currentIndex, List<CollisionEvent> events, GameSession session)
+        private static void HandleBallCollisions(PoolBall ball1, List<PoolBall> allBalls, int currentIndex, List<CollisionEvent> events, GameSession? session)
         {
             for (int i = currentIndex + 1; i < allBalls.Count; i++)
             {
@@ -54,7 +54,7 @@ namespace AetherPool.Game
 
                 if (distSq < radiusSum * radiusSum && distSq > 0)
                 {
-                    if (session.FirstBallHitThisTurn == null)
+                    if (session !=null && session.FirstBallHitThisTurn == null)
                     {
                         if (ball1.Number == 0) session.FirstBallHitThisTurn = ball2;
                         if (ball2.Number == 0) session.FirstBallHitThisTurn = ball1;
