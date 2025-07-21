@@ -4,14 +4,7 @@
         "Name": "AetherPool",
         "Punchline": "A 2D pool game inside Final Fantasy XIV.",
         "Description": "Play a game of pool directly in a Dalamud window. Use /aetherpool to open.",
-        "Changelog": [
-            "v0.4.0.0: Advanced triggers and major UI/visual enhancements.",
-            "- Added 'Open on X' triggers for death, queue, etc.",
-            "- Added a new title screen with background and outlined text.",
-            "- Added a player assignment indicator to the HUD.",
-            "- Added 'Victory'/'Game Over' text at the end of a match.",
-            "- Replaced the cue ball with a new custom texture."
-        ],
+        "Changelog": "v0.4.0.0: Advanced triggers and major UI/visual enhancements. \n - Added 'Open on X' triggers for death, queue, etc.\n - Added a new title screen with background and outlined text.\n - Added a player assignment indicator to the HUD.\n - Added 'Victory'/'Game Over' text at the end of a match.\n - Replaced the cue ball with a new custom texture.",
         "IsHide": false,
         "InternalName": "AetherPool",
         "AssemblyVersion": "0.4.0.0",
