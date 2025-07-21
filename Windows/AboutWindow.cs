@@ -1,4 +1,4 @@
-#pragma warning disable CA1416 // Suppress platform compatibility warnings
+#pragma warning disable CA1416 
 
 using System;
 using System.Numerics;

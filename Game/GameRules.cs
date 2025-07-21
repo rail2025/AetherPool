@@ -10,7 +10,7 @@ namespace AetherPool.Game
         {
             var ballsOnTable = session.Balls.Where(b => !b.IsSunk).ToList();
 
-            // If checking legality for a shot that just happened, we need to consider balls pocketed during that shot as having been on the table.
+            // consider balls pocketed during that shot as having been on the table.
             if (beforeShot)
             {
                 var pocketedThisTurn = session.Balls.Where(b => b.IsSunk && !session.LastTurnSunkBalls.Contains(b)).ToList();
@@ -51,7 +51,7 @@ namespace AetherPool.Game
             var pocketed = session.Balls.Where(b => b.IsSunk && !session.LastTurnSunkBalls.Contains(b)).ToList();
             var firstHit = session.FirstBallHitThisTurn;
 
-            // *** THE FIX: Get the legal targets as they were BEFORE the shot was taken ***
+            // Get the legal targets as they were BEFORE the shot was taken
             var legalTargetsBeforeShot = GetLegalTargets(session, true);
 
             // --- FOUL CHECKS ---

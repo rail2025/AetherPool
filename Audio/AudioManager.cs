@@ -60,7 +60,7 @@ namespace AetherPool.Audio
             }
             catch (Exception)
             {
-                // Errors can be logged here if necessary
+                // Errors go here
             }
         }
 

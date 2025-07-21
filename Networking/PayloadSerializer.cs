@@ -84,7 +84,7 @@ namespace AetherPool.Serialization
             }
             catch (Exception)
             {
-                // Optionally log the error if you have a logging mechanism in place.
+                // log the error here
                 return null;
             }
         }

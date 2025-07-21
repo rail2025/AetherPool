@@ -3,7 +3,7 @@
   <PropertyGroup>
     <AssemblyName>AetherPool</AssemblyName>
     <RootNamespace>AetherPool</RootNamespace>
-    <AssemblyVersion>0.3.0.0</AssemblyVersion>
+    <AssemblyVersion>0.4.0.0</AssemblyVersion>
     <Description>Pool in FFXIV</Description>
     <PackageProjectUrl>https://github.com/rail2025/AetherPool</PackageProjectUrl>
     <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
@@ -21,11 +21,11 @@
     <Content Include="Assets\Images\background 3.png" />
     <Content Include="Assets\Images\background.png" />
     <Content Include="Assets\Images\bird.png" />
-    <Content Include="Assets\Images\bomb.png" />
+    <EmbeddedResource Include="Assets\Images\bomb.png" />
     <Content Include="Assets\Images\chest.png" />
     <Content Include="Assets\Images\dps.png" />
     <Content Include="Assets\Images\healer.png" />
-    <Content Include="Assets\Images\icon.png" />
+    <EmbeddedResource Include="Assets\Images\icon.png" />
     <Content Include="Assets\Images\mirror.png" />
     <Content Include="Assets\Images\paint.png" />
     <Content Include="Assets\Images\star.png" />

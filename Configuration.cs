@@ -12,6 +12,11 @@ namespace AetherPool
         public int Version { get; set; } = 0;
 
         public bool IsGameWindowLocked { get; set; } = false;
+
+        public bool OpenOnDeath { get; set; } = true;
+        public bool OpenInQueue { get; set; } = false;
+        public bool OpenDuringCrafting { get; set; } = false;
+        public bool OpenInPartyFinder { get; set; } = false;
         public float MusicVolume { get; set; } = 0.5f;
 
         [NonSerialized]

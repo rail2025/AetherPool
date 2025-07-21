@@ -24,7 +24,7 @@ namespace AetherPool.Windows
         private string generatedPassphrase = "";
         private string statusMessage = "Disconnected";
 
-        // Word lists for passphrase generation, adapted from AetherBreaker/AetherDraw
+        // Word lists for passphrase generation
         private static readonly Random Random = new();
         private static readonly string[] OpinionVerbs = { "I like", "I hate", "I want", "I need", "Craving", "Seeking", "Avoiding", "Serving", "Finding", "Cooking", "Tasting", "I found", "I lost", "I traded", "He stole", "She sold", "They want", "Remembering", "Forgetting", "Questioning", "Analyzing", "Ignoring", "Praising", "Chasing", "Selling" };
         private static readonly string[] Adjectives = { "spicy", "creamy", "sultry", "glimmering", "ancient", "crispy", "zesty", "hearty", "fluffy", "savory", "frozen", "bubbling", "forbidden", "radiant", "somber", "dented", "gilded", "rusted", "glowing", "cracked", "smelly", "aromatic", "stale", "fresh", "bitter", "sweet", "silken", "spiky" };
@@ -114,7 +114,7 @@ namespace AetherPool.Windows
                         {
                             statusMessage = "Connecting via Party ID...";
                             currentState = SessionState.Loading;
-                            // AetherPool should identify as "ab" to use the 1v1 server logic
+                            // identify as "ab" to use the 1v1 server logic
                             _ = plugin.NetworkManager.ConnectAsync(serverAddress, partyPassphrase, "ab");
                         }
                     }
@@ -187,7 +187,7 @@ namespace AetherPool.Windows
                 {
                     statusMessage = $"Connecting with passphrase...";
                     currentState = SessionState.Loading;
-                    // AetherPool should identify as "ab" to use the 1v1 server logic
+                    // identify as "ab" to use the 1v1 server logic
                     _ = plugin.NetworkManager.ConnectAsync(serverAddress, inputPassphrase, "ab");
                 }
             }

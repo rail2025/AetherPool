@@ -85,7 +85,7 @@ namespace AetherPool.Game
 
         private void HandleTurnOutcome(TurnOutcome outcome)
         {
-            // Correct 9-ball foul logic: only the 9-ball is spotted if pocketed on a foul.
+            // only the 9-ball is spotted if pocketed on a foul.
             if (outcome == TurnOutcome.FoulSwitchTurn && CurrentMode == GameMode.NineBall)
             {
                 var pocketedThisTurn = Balls.Where(b => b.IsSunk && !LastTurnSunkBalls.Contains(b)).ToList();

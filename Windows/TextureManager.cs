@@ -1,7 +1,9 @@
-#pragma warning disable CA1416 // Suppress platform compatibility warnings
+#pragma warning disable CA1416
 
 using Dalamud.Interface.Textures;
 using Dalamud.Interface.Textures.TextureWraps;
+using Dalamud.Logging;
+using Dalamud.Plugin.Services;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing;
@@ -10,16 +12,65 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
+using System.Numerics;
+using System.Reflection;
 
 namespace AetherPool.Windows
 {
     public class TextureManager : IDisposable
     {
         private readonly Dictionary<int, IDalamudTextureWrap> ballTextures = new();
+        public IDalamudTextureWrap? CueBallTexture { get; private set; }
 
         public TextureManager()
         {
             GenerateAllBallTextures();
+            LoadCueBallTexture();
+        }
+
+        private void LoadCueBallTexture()
+        {
+            string resourcePath = "AetherPool.Assets.Images.bomb.png";
+
+            try
+            {
+                var assembly = Assembly.GetExecutingAssembly();
+                using var stream = assembly.GetManifestResourceStream(resourcePath);
+
+                if (stream == null)
+                {
+                    return;
+                }
+
+                using var image = Image.Load<Rgba32>(stream);
+
+                var center = new Vector2(image.Width / 2f, image.Height / 2f);
+                float radiusSq = center.X * center.X;
+
+                image.ProcessPixelRows(accessor =>
+                {
+                    for (int y = 0; y < accessor.Height; y++)
+                    {
+                        Span<Rgba32> pixelRow = accessor.GetRowSpan(y);
+                        for (int x = 0; x < pixelRow.Length; x++)
+                        {
+                            // If the pixel is outside the circle's radius, make it transparent.
+                            if (Vector2.DistanceSquared(new Vector2(x, y), center) > radiusSq)
+                            {
+                                pixelRow[x].A = 0;
+                            }
+                        }
+                    }
+                });
+                
+                var rgbaBytes = new byte[image.Width * image.Height * 4];
+                image.CopyPixelDataTo(rgbaBytes);
+
+                this.CueBallTexture = Plugin.TextureProvider.CreateFromRaw(RawImageSpecification.Rgba32(image.Width, image.Height), rgbaBytes);
+            }
+            catch (Exception)
+            {
+            }
         }
 
         public IDalamudTextureWrap? GetBallTexture(int ballNumber)
@@ -35,7 +86,7 @@ namespace AetherPool.Windows
                 0xFF000000, 0xFF00D4FF, 0xFF0000FF, 0xFFFF0000, 0xFF800080, 0xFFFFA500, 0xFF008000, 0xFF800000
             };
 
-            for (int i = 0; i <= 15; i++)
+            for (int i = 1; i <= 15; i++)
             {
                 bool isStriped = i > 8;
                 var texture = GenerateBallTexture(i, colors[i], isStriped);
@@ -77,7 +128,6 @@ namespace AetherPool.Windows
 
                 if (SystemFonts.TryGet("Arial", out var fontFamily))
                 {
-                    // Use a larger font size, slightly smaller for two-digit numbers
                     var fontSize = number < 10 ? numberCircleRadius * 1.6f : numberCircleRadius * 1.3f;
                     var font = new Font(fontFamily, fontSize, FontStyle.Bold);
 
@@ -103,6 +153,7 @@ namespace AetherPool.Windows
             {
                 texture.Dispose();
             }
+            CueBallTexture?.Dispose();
         }
     }
 }

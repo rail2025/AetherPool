@@ -1,4 +1,4 @@
-#pragma warning disable CA1416 // Suppress platform compatibility warnings
+#pragma warning disable CA1416
 
 using System;
 using System.Numerics;
@@ -15,9 +15,10 @@ namespace AetherPool.Windows
         {
             this.SizeConstraints = new WindowSizeConstraints
             {
-                MinimumSize = new Vector2(300, 150),
+                MinimumSize = new Vector2(300, 250),
                 MaximumSize = new Vector2(float.MaxValue, float.MaxValue)
             };
+            this.SizeCondition = ImGuiCond.FirstUseEver;
 
             this.configuration = plugin.Configuration;
         }
@@ -39,6 +40,39 @@ namespace AetherPool.Windows
                 configuration.MusicVolume = volume;
                 configuration.Save();
             }
+
+            ImGui.Separator();
+
+            ImGui.Text("Advanced Triggers");
+
+            var openOnDeath = this.configuration.OpenOnDeath;
+            if (ImGui.Checkbox("Open on Death", ref openOnDeath))
+            {
+                this.configuration.OpenOnDeath = openOnDeath;
+                this.configuration.Save();
+            }
+
+            var openInQueue = this.configuration.OpenInQueue;
+            if (ImGui.Checkbox("Open in Duty Queue", ref openInQueue))
+            {
+                this.configuration.OpenInQueue = openInQueue;
+                this.configuration.Save();
+            }
+
+            var openInPartyFinder = this.configuration.OpenInPartyFinder;
+            if (ImGui.Checkbox("Open in Party Finder Queue", ref openInPartyFinder))
+            {
+                this.configuration.OpenInPartyFinder = openInPartyFinder;
+                this.configuration.Save();
+            }
+
+            var openDuringCrafting = this.configuration.OpenDuringCrafting;
+            if (ImGui.Checkbox("Open during long craft", ref openDuringCrafting))
+            {
+                this.configuration.OpenDuringCrafting = openDuringCrafting;
+                this.configuration.Save();
+            }
+            
         }
     }
 }

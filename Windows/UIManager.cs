@@ -3,8 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using AetherPool.Game;
 using AetherPool.Game.GameObjects;
 using Dalamud.Interface;
+using Dalamud.Interface.Utility;
 using ImGuiNET;
 
 namespace AetherPool.Windows
@@ -34,7 +36,9 @@ namespace AetherPool.Windows
             var screenRadius = ball.Radius * scale;
             var shadowOffset = new Vector2(2 * scale, 2 * scale);
             drawList.AddCircleFilled(screenPos + shadowOffset, screenRadius, ImGui.GetColorU32(new Vector4(0, 0, 0, 0.3f)), 32);
-            var texture = textureManager.GetBallTexture(ball.Number);
+
+            var texture = ball.Number == 0 ? textureManager.CueBallTexture : textureManager.GetBallTexture(ball.Number);
+
             if (texture != null)
             {
                 drawList.AddImage(texture.ImGuiHandle, screenPos - new Vector2(screenRadius), screenPos + new Vector2(screenRadius));
@@ -71,6 +75,24 @@ namespace AetherPool.Windows
             }
         }
 
+        public static void DrawGameOverText(Vector2 tableOrigin, Vector2 tableSize, GameSession session)
+        {
+            if (session.CurrentState != GameState.GameOver) return;
+
+            string text = session.Winner == Player.Human ? "VICTORY!" : "GAME OVER";
+            var textColor = session.Winner == Player.Human ? new Vector4(0, 1, 0, 1) : new Vector4(1, 0, 0, 1);
+
+            ImGui.PushFont(UiBuilder.DefaultFont);
+            var textSize = ImGui.CalcTextSize(text);
+            var textPos = tableOrigin + (tableSize - textSize) / 2;
+
+            var drawList = ImGui.GetForegroundDrawList();
+            drawList.AddText(textPos + new Vector2(2, 2), ImGui.GetColorU32(new Vector4(0, 0, 0, 0.8f)), text); // Shadow
+            drawList.AddText(textPos, ImGui.GetColorU32(textColor), text);
+
+            ImGui.PopFont();
+        }
+
         public static void DrawFoulMessage(Vector2 windowContentMin, Vector2 canvasSize, string? foulReason)
         {
             if (string.IsNullOrEmpty(foulReason)) return;
@@ -83,7 +105,7 @@ namespace AetherPool.Windows
             ImGui.PopFont();
 
             var boxSize = textSize + padding * 2;
-            var boxPos = windowContentMin + new Vector2((canvasSize.X - boxSize.X) / 2, 10); // Position at top-center of window
+            var boxPos = windowContentMin + new Vector2((canvasSize.X - boxSize.X) / 2, 10);
 
             var drawList = ImGui.GetForegroundDrawList();
 
@@ -95,7 +117,7 @@ namespace AetherPool.Windows
         }
 
         public static void DrawHUD(
-            ImDrawListPtr drawList, Vector2 windowOrigin, Vector2 windowSize,
+            ImDrawListPtr drawList, GameSession session, Vector2 windowOrigin, Vector2 windowSize,
             Vector2 tableOrigin, Vector2 tableSize, ref Vector2 aimOffset,
             Action onPlaceCueBall, Action onUndo, Action onResetGame)
         {
@@ -113,6 +135,11 @@ namespace AetherPool.Windows
             var controlSize = 80f;
             var controlPos = new Vector2(tableOrigin.X + tableSize.X + 20, tableOrigin.Y);
 
+            var label = "English / Spin";
+            var labelSize = ImGui.CalcTextSize(label);
+            ImGui.SetCursorScreenPos(controlPos + new Vector2((controlSize - labelSize.X) / 2, -labelSize.Y - 5));
+            ImGui.Text(label);
+
             ImGui.SetCursorScreenPos(controlPos);
             ImGui.BeginChild("##AimControlChild", new Vector2(controlSize, controlSize), true, ImGuiWindowFlags.NoScrollbar);
 
@@ -129,6 +156,16 @@ namespace AetherPool.Windows
             }
             childDrawList.AddCircleFilled(controlCenter + aimOffset * controlRadius, 3, ImGui.GetColorU32(new Vector4(1, 0, 0, 1)));
             ImGui.EndChild();
+
+            var assignment = session.CurrentTurn == Player.Human ? session.Player1Assignment : session.Player2Assignment;
+            if (assignment != PlayerAssignment.Unassigned)
+            {
+                var assignmentText = assignment.ToString();
+                var assignmentTextSize = ImGui.CalcTextSize(assignmentText);
+                var assignmentPos = controlPos + new Vector2((controlSize - assignmentTextSize.X) / 2, controlSize + 5);
+                ImGui.SetCursorScreenPos(assignmentPos);
+                ImGui.TextColored(new Vector4(1, 1, 0, 1), assignmentText);
+            }
         }
     }
 }

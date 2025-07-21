@@ -47,23 +47,12 @@ namespace AetherPool.Windows
         {
             plugin.TitleWindow.IsOpen = true;
         }
-        /// <summary>
-        /// Indicates if the game is currently running in multiplayer mode.
-        /// </summary>
+
         public bool IsMultiplayer { get; private set; } = false;
 
-        /// <summary>
-        /// Called when a multiplayer game begins.
-        /// Sets internal flags and updates session state if needed.
-        /// </summary>
         public void StartMultiplayerGame()
         {
             IsMultiplayer = true;
-
-            // reset or configure gameSession here for multiplayer.
-            // For example:
-            // gameSession.Reset();
-            // gameSession.SetMultiplayerMode(true);
         }
 
         public override void Draw()
@@ -147,7 +136,6 @@ namespace AetherPool.Windows
             ImGui.SetCursorScreenPos(tableOrigin);
             ImGui.InvisibleButton("##PoolTableCanvas", tableSize);
 
-            // Pass the window's content region info to the foul message drawer
             UIManager.DrawFoulMessage(windowContentMin, canvasSize, gameSession.FoulReason);
 
             var mousePos = ImGui.GetMousePos();
@@ -212,7 +200,9 @@ namespace AetherPool.Windows
                 UIManager.DrawCueStick(drawList, tableOrigin, gameSession.Cue, shotPower, scale, isShooting, shootAnimationTimer / ShootAnimationDuration);
             }
 
-            UIManager.DrawHUD(drawList, windowContentMin, canvasSize, tableOrigin, tableSize, ref cueballAimOffset,
+            UIManager.DrawGameOverText(tableOrigin, tableSize, gameSession);
+
+            UIManager.DrawHUD(drawList, gameSession, windowContentMin, canvasSize, tableOrigin, tableSize, ref cueballAimOffset,
                 () => gameSession.EnterPlaceCueBallState(),
                 () => gameSession.UndoLastShot(),
                 () => {
