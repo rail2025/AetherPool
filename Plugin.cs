@@ -81,7 +81,6 @@ namespace AetherPool
             ClientState.TerritoryChanged += OnTerritoryChanged;
             Condition.ConditionChange += OnConditionChanged;
           
-            TitleWindow.IsOpen = true;
         }
 
         public void Dispose()
