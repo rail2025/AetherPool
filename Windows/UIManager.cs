@@ -7,7 +7,7 @@ using AetherPool.Game;
 using AetherPool.Game.GameObjects;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 
 namespace AetherPool.Windows
 {
@@ -41,7 +41,7 @@ namespace AetherPool.Windows
 
             if (texture != null)
             {
-                drawList.AddImage(texture.ImGuiHandle, screenPos - new Vector2(screenRadius), screenPos + new Vector2(screenRadius));
+                drawList.AddImage(texture.Handle, screenPos - new Vector2(screenRadius), screenPos + new Vector2(screenRadius));
             }
             else
             {
@@ -67,11 +67,27 @@ namespace AetherPool.Windows
             drawList.AddLine(tableOrigin + cueStartPos, tableOrigin + endPoint, ImGui.GetColorU32(new Vector4(0.7f, 0.5f, 0.3f, 1.0f)), 4f * scale);
         }
 
-        public static void DrawAimingLine(ImDrawListPtr drawList, Vector2 tableOrigin, List<Vector2> path, float scale)
+        public static void DrawAimingLine(ImDrawListPtr drawList, Vector2 tableOrigin, List<Vector2> path, float scale, float cueBallRadius)
         {
+            if (path.Count < 2) return;
+
+            var color = ImGui.GetColorU32(new Vector4(1, 1, 1, 0.2f));
+            var thickness = cueBallRadius * scale;
+
             for (int i = 0; i < path.Count - 1; i++)
             {
-                drawList.AddLine(tableOrigin + path[i] * scale, tableOrigin + path[i + 1] * scale, ImGui.GetColorU32(new Vector4(1, 1, 1, 0.5f)), 1f);
+                var p1 = tableOrigin + path[i] * scale;
+                var p2 = tableOrigin + path[i + 1] * scale;
+
+                var direction = Vector2.Normalize(p2 - p1);
+                var normal = new Vector2(-direction.Y, direction.X);
+
+                var v1 = p1 + normal * thickness;
+                var v2 = p2 + normal * thickness;
+                var v3 = p2 - normal * thickness;
+                var v4 = p1 - normal * thickness;
+
+                drawList.AddQuadFilled(v1, v2, v3, v4, color);
             }
         }
 
@@ -101,7 +117,7 @@ namespace AetherPool.Windows
             var padding = new Vector2(10, 10);
 
             ImGui.PushFont(UiBuilder.DefaultFont);
-            var textSize = ImGui.CalcTextSize(text, canvasSize.X * 0.6f);
+            var textSize = ImGui.CalcTextSize(text, false, canvasSize.X * 0.6f);
             ImGui.PopFont();
 
             var boxSize = textSize + padding * 2;

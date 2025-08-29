@@ -54,7 +54,7 @@ namespace AetherPool.Game
 
                 if (distSq < radiusSum * radiusSum && distSq > 0)
                 {
-                    if (session !=null && session.FirstBallHitThisTurn == null)
+                    if (session != null && session.FirstBallHitThisTurn == null)
                     {
                         if (ball1.Number == 0) session.FirstBallHitThisTurn = ball2;
                         if (ball2.Number == 0) session.FirstBallHitThisTurn = ball1;
@@ -128,27 +128,54 @@ namespace AetherPool.Game
         {
             var pathPoints = new List<Vector2> { startPos };
             var currentPos = startPos;
-            var velocity = new Vector2(MathF.Cos(angle), MathF.Sin(angle));
-            int bounces = 0;
+            var direction = new Vector2(MathF.Cos(angle), MathF.Sin(angle));
+            const int maxBounces = 2;
+            const float maxPathLength = 2000;
 
-            float feltX = board.BorderWidth;
-            float feltY = board.BorderWidth;
-            float feltWidth = board.Width - (board.BorderWidth * 2);
-            float feltHeight = board.Height - (board.BorderWidth * 2);
+            float feltXMin = board.BorderWidth + radius;
+            float feltXMax = board.Width - board.BorderWidth - radius;
+            float feltYMin = board.BorderWidth + radius;
+            float feltYMax = board.Height - board.BorderWidth - radius;
 
-            for (int i = 0; i < 2000; i++)
+            for (int i = 0; i < maxBounces; i++)
             {
-                currentPos += velocity;
+                float tMin = float.MaxValue;
+                Vector2 nextCollisionNormal = Vector2.Zero;
 
-                if (currentPos.X - radius < feltX) { currentPos.X = feltX + radius; velocity.X *= -1; pathPoints.Add(currentPos); bounces++; }
-                else if (currentPos.X + radius > feltX + feltWidth) { currentPos.X = feltX + feltWidth - radius; velocity.X *= -1; pathPoints.Add(currentPos); bounces++; }
+                if (direction.X < 0)
+                {
+                    float t = (feltXMin - currentPos.X) / direction.X;
+                    if (t > 0 && t < tMin) { tMin = t; nextCollisionNormal = Vector2.UnitX; }
+                }
+                if (direction.X > 0)
+                {
+                    float t = (feltXMax - currentPos.X) / direction.X;
+                    if (t > 0 && t < tMin) { tMin = t; nextCollisionNormal = -Vector2.UnitX; }
+                }
+                if (direction.Y < 0)
+                {
+                    float t = (feltYMin - currentPos.Y) / direction.Y;
+                    if (t > 0 && t < tMin) { tMin = t; nextCollisionNormal = Vector2.UnitY; }
+                }
+                if (direction.Y > 0)
+                {
+                    float t = (feltYMax - currentPos.Y) / direction.Y;
+                    if (t > 0 && t < tMin) { tMin = t; nextCollisionNormal = -Vector2.UnitY; }
+                }
 
-                if (currentPos.Y - radius < feltY) { currentPos.Y = feltY + radius; velocity.Y *= -1; pathPoints.Add(currentPos); bounces++; }
-                else if (currentPos.Y + radius > feltY + feltHeight) { currentPos.Y = feltY + feltHeight - radius; velocity.Y *= -1; pathPoints.Add(currentPos); bounces++; }
+                if (tMin == float.MaxValue || tMin > maxPathLength)
+                {
+                    pathPoints.Add(currentPos + direction * maxPathLength);
+                    break;
+                }
 
-                if (bounces >= 2) break;
+                var collisionPoint = currentPos + direction * tMin;
+                pathPoints.Add(collisionPoint);
+
+                currentPos = collisionPoint;
+                direction = Vector2.Reflect(direction, nextCollisionNormal);
             }
-            pathPoints.Add(currentPos);
+
             return pathPoints;
         }
     }

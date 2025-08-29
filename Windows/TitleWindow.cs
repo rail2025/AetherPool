@@ -8,7 +8,7 @@ using AetherPool.Game;
 using Dalamud.Interface.Textures;
 using Dalamud.Interface.Textures.TextureWraps;
 using Dalamud.Interface.Windowing;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
@@ -63,7 +63,7 @@ namespace AetherPool.Windows
             if (this.backgroundTexture != null)
             {
                 var windowPos = ImGui.GetWindowPos();
-                ImGui.GetWindowDrawList().AddImage(this.backgroundTexture.ImGuiHandle, windowPos, windowPos + windowSize);
+                ImGui.GetWindowDrawList().AddImage(this.backgroundTexture.Handle, windowPos, windowPos + windowSize);
             }
 
             var buttonSize = new Vector2(windowSize.X * 0.6f, 30);

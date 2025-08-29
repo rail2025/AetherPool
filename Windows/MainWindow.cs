@@ -5,7 +5,7 @@ using System.Numerics;
 using AetherPool.Game;
 using AetherPool.Game.GameObjects;
 using Dalamud.Interface.Windowing;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 
 namespace AetherPool.Windows
 {
@@ -160,7 +160,7 @@ namespace AetherPool.Windows
                     {
                         gameSession.Cue.AimAt(mousePosRelative);
                         var path = PhysicsEngine.PredictBallPath(gameSession.Board, cueBall.Position, gameSession.Cue.Angle, cueBall.Radius);
-                        UIManager.DrawAimingLine(drawList, tableOrigin, path, scale);
+                        UIManager.DrawAimingLine(drawList, tableOrigin, path, scale, cueBall.Radius);
 
                         if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
                         {
@@ -177,7 +177,7 @@ namespace AetherPool.Windows
                         if (Vector2.Dot(Vector2.Normalize(dragVector), new Vector2(MathF.Cos(lockedAimAngle), MathF.Sin(lockedAimAngle))) < 0) shotPower = 0;
 
                         var path = PhysicsEngine.PredictBallPath(gameSession.Board, cueBall.Position, lockedAimAngle, cueBall.Radius);
-                        UIManager.DrawAimingLine(drawList, tableOrigin, path, scale);
+                        UIManager.DrawAimingLine(drawList, tableOrigin, path, scale, cueBall.Radius);
 
                         if (ImGui.IsMouseReleased(ImGuiMouseButton.Left))
                         {
