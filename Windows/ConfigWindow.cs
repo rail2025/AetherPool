@@ -34,12 +34,19 @@ namespace AetherPool.Windows
                 configuration.Save();
             }
 
-            float volume = configuration.MusicVolume;
+            float volume = configuration.SfxVolume;
+            if (ImGui.SliderFloat("SFX Volume", ref volume, 0.0f, 1.0f))
+            {
+                configuration.SfxVolume = volume;
+                configuration.Save();
+            }
+
+            /*float volume = configuration.MusicVolume;
             if (ImGui.SliderFloat("Music Volume", ref volume, 0.0f, 1.0f))
             {
                 configuration.MusicVolume = volume;
                 configuration.Save();
-            }
+            }*/
 
             ImGui.Separator();
 

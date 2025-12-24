@@ -25,6 +25,8 @@ namespace AetherPool
         [PluginService] internal IPartyList PartyList { get; private set; } = null!;
         [PluginService] internal static IClientState ClientState { get; private set; } = null!;
         [PluginService] internal static ICondition Condition { get; private set; } = null!;
+        [PluginService] internal static IPluginLog Log { get; private set; } = null!;
+        [PluginService] internal static IObjectTable ObjectTable { get; private set; } = null!;
 
         private bool wasDead = false;
         
@@ -47,7 +49,7 @@ namespace AetherPool
             Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
             Configuration.Initialize(PluginInterface);
 
-            AudioManager = new AudioManager();
+            AudioManager = new AudioManager(this);
             GameSession = new GameSession();
             NetworkManager = new NetworkManager();
 
@@ -179,7 +181,7 @@ namespace AetherPool
             // Open on Death
             if (flag == ConditionFlag.InCombat && !value)
             {
-                bool isDead = ClientState.LocalPlayer?.CurrentHp == 0;
+                bool isDead = ObjectTable.LocalPlayer?.CurrentHp == 0;
                 if (isDead && !wasDead && Configuration.OpenOnDeath)
                 {
                     TitleWindow.IsOpen = true;

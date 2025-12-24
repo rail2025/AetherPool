@@ -60,7 +60,13 @@ namespace AetherPool.Game
                         if (ball2.Number == 0) session.FirstBallHitThisTurn = ball1;
                     }
 
-                    events.Add(new CollisionEvent { Type = CollisionType.Ball, ImpactVelocity = (ball1.Velocity - ball2.Velocity).Length() });
+                    events.Add(new CollisionEvent
+                    {
+                        Type = CollisionType.Ball,
+                        ImpactVelocity = (ball1.Velocity - ball2.Velocity).Length(),
+                        BodyA_ID = ball1.Number,
+                        BodyB_ID = ball2.Number
+                    });
 
                     float distance = MathF.Sqrt(distSq);
                     Vector2 normal = delta / distance;

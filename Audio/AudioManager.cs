@@ -1,9 +1,11 @@
+#pragma warning disable CA1416
+using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using NAudio.Wave;
-using NAudio.Wave.SampleProviders;
 
 namespace AetherPool.Audio
 {
@@ -12,9 +14,12 @@ namespace AetherPool.Audio
         private readonly Dictionary<string, byte[]> soundCache = new();
         private readonly WaveOutEvent sfxOutputDevice;
         private readonly MixingSampleProvider sfxMixer;
+        private readonly Configuration configuration;
 
-        public AudioManager()
+        public AudioManager(Plugin plugin)
         {
+            this.configuration = plugin.Configuration;
+
             var mixerFormat = WaveFormat.CreateIeeeFloatWaveFormat(44100, 2);
             this.sfxMixer = new MixingSampleProvider(mixerFormat) { ReadFully = true };
             this.sfxOutputDevice = new WaveOutEvent();
@@ -50,10 +55,15 @@ namespace AetherPool.Audio
 
             try
             {
+                // DEBUG LOG: Confirm the actual audio request to NAudio
+                Plugin.Log.Debug($"[AUDIO_LOG] Audio Manager Playing: {fileName} at Volume {volume}");
+
                 var reader = new WaveFileReader(new MemoryStream(soundBytes));
+                float finalVolume = Math.Clamp(volume * configuration.SfxVolume, 0.0f, 1.0f);
+
                 var volumeProvider = new VolumeSampleProvider(reader.ToSampleProvider())
                 {
-                    Volume = Math.Clamp(volume, 0.0f, 1.0f)
+                    Volume = finalVolume
                 };
 
                 sfxMixer.AddMixerInput(ConvertToStereo(volumeProvider));

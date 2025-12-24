@@ -14,5 +14,7 @@ namespace AetherPool.Game
         public float ImpactVelocity;
         public int? BallNumber;
         public bool ProcessedForSound;
+        public int BodyA_ID;
+        public int BodyB_ID;
     }
 }

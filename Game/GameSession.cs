@@ -264,12 +264,15 @@ namespace AetherPool.Game
                     }
                 }
                 int ballIdx = 0;
+                float spacing = ballRadius * 2.01f;
                 for (int row = 0; row < 5; row++)
                 {
                     for (int col = 0; col <= row; col++)
                     {
-                        float x = startX - (row * (MathF.Sqrt(3) * ballRadius));
-                        float y = startY + (col * 2 * ballRadius) - (row * ballRadius);
+                        float rowDepth = row * (MathF.Sqrt(3) * ballRadius * 1.005f); // Adjust depth slightly
+                        float x = startX - rowDepth;
+                        float y = startY + (col * spacing) - (row * (spacing / 2f));
+
                         int ballNum = rackNumbers[ballIdx++];
                         Balls.Add(new PoolBall(new Vector2(x, y), ballRadius, ballNum, colors[ballNum], ballNum > 8));
                     }
@@ -287,8 +290,8 @@ namespace AetherPool.Game
                 {
                     var pos = rackPositions[i];
                     int ballNum = finalNumbers[i];
-                    float x = Board.Width * 0.25f - pos.row * (MathF.Sqrt(3) * ballRadius);
-                    float y = startY + pos.col * ballRadius;
+                    float x = Board.Width * 0.25f - pos.row * (MathF.Sqrt(3) * ballRadius * 1.005f);
+                    float y = startY + pos.col * (ballRadius * 2.01f) / 2f;
                     Balls.Add(new PoolBall(new Vector2(x, y), ballRadius, ballNum, colors[ballNum], ballNum > 8));
                 }
             }

@@ -6,6 +6,7 @@ using AetherPool.Game;
 using AetherPool.Game.GameObjects;
 using Dalamud.Interface.Windowing;
 using Dalamud.Bindings.ImGui;
+using System.Collections.Generic;
 
 namespace AetherPool.Windows
 {
@@ -14,6 +15,8 @@ namespace AetherPool.Windows
         private readonly Plugin plugin;
         private readonly GameSession gameSession;
         private readonly TextureManager textureManager;
+
+        private readonly Dictionary<string, long> _soundDebounce = new();
 
         private bool isDraggingForPower = false;
         private bool isShooting = false;
@@ -76,11 +79,27 @@ namespace AetherPool.Windows
 
         private void ProcessCollisionSounds()
         {
+            long now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
             for (int i = 0; i < gameSession.CollisionEvents.Count; i++)
             {
                 var e = gameSession.CollisionEvents[i];
                 if (!e.ProcessedForSound)
                 {
+                    // Generate a unique key for the collision pair (e.g. "Ball:0-Ball:1")
+                    // We order them so "0-1" is the same as "1-0"
+                    string key = e.BodyA_ID < e.BodyB_ID
+                       ? $"{e.BodyA_ID}-{e.BodyB_ID}"
+                       : $"{e.BodyB_ID}-{e.BodyA_ID}";
+
+                    // Check debounce (50ms cooldown)
+                    if (_soundDebounce.TryGetValue(key, out long lastTime) && (now - lastTime) < 50)
+                    {
+                        e.ProcessedForSound = true;
+                        gameSession.CollisionEvents[i] = e;
+                        continue;
+                    }
+
                     float volume = Math.Clamp(e.ImpactVelocity / 200f, 0.1f, 1.0f);
                     switch (e.Type)
                     {
@@ -94,10 +113,17 @@ namespace AetherPool.Windows
                             plugin.AudioManager.PlaySfx("pocket.wav", 1.0f);
                             break;
                     }
+
+                    // Update timestamp
+                    _soundDebounce[key] = now;
+
                     e.ProcessedForSound = true;
                     gameSession.CollisionEvents[i] = e;
                 }
             }
+
+            if (gameSession.CollisionEvents.Count == 0 && _soundDebounce.Count > 100)
+                _soundDebounce.Clear();
         }
 
         private void DrawInGameUI()
@@ -185,6 +211,8 @@ namespace AetherPool.Windows
                             {
                                 isShooting = true;
                                 shootAnimationTimer = 0f;
+                                // DEBUG LOG: Track the cue strike request
+                                Plugin.Log.Debug($"[AUDIO_LOG] Cue Strike Triggered: Power={shotPower}, Angle={lockedAimAngle}");
                                 plugin.AudioManager.PlaySfx("cue_hit.wav", shotPower);
                                 gameSession.FireCueBall(lockedAimAngle, shotPower, cueballAimOffset);
                             }
